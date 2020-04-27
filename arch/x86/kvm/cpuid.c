@@ -1036,8 +1036,12 @@ EXPORT_SYMBOL_GPL(kvm_cpuid);
 
 
 
-u32 exits;
-void add_exit(void);
+//u32 exits;
+//void add_exit(void);
+
+//Merge exits and exits per reason for assignmenet 2 (case 1 and 3)
+u32 exits,exits_per_reason[62];
+void add_exit_per_reason(u32 exit_reason);
 
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
@@ -1056,6 +1060,16 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	*/
 	if(eax  ==  0x4fffffff){
 		eax = exits;
+	}
+	/*
+		assignment 2 - case 3
+		For CPUID leaf node %eax=0x4FFFFFFD:
+		Return the number of exits for the exit number provided (on input) in %ecx
+		This value should be returned in %eax
+	*/ 
+	else if(eax  ==  0x4ffffffd){
+      if(ecx >= 0 && ecx < 62)	    
+            eax = exits_per_reason[(int)ecx];
 	} else {
 		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
 	}
@@ -1068,11 +1082,13 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 }
 
 
-void add_exit(void)
-{
- 	exits++;
+void add_exit_per_reason(u32 exit_reason){
+    if(exit_reason >= 0 && exit_reason < 62){    
+        exits++;
+        exits_per_reason[(int)exit_reason]++;
+    }
 }
 
 EXPORT_SYMBOL_GPL(kvm_emulate_cpuid);
-EXPORT_SYMBOL_GPL(add_exit);
+EXPORT_SYMBOL_GPL(add_exit_per_reason);
 
