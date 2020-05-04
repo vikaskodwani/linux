@@ -1054,7 +1054,7 @@ void add_exit_per_reason(u32 exit_reason);
 
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
-	u32 eax, ebx=0x40000000, ecx, edx=0x40000000;
+	u32 eax, ebx=0x4FFFFFFF, ecx, edx=0x4FFFFFFF;
 
 	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
 		return 1;
@@ -1110,7 +1110,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
         // ebx =
 		// ecx 	=    
     }else {
-		
+		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
 	}
 	
 	kvm_rax_write(vcpu, eax);
