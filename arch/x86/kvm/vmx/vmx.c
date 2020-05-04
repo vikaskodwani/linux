@@ -5852,6 +5852,7 @@ void dump_vmcs(void)
 u32 exits =0;
 EXPORT_SYMBOL(exits);
 void add_exit_per_reason(u32 exit_reason);
+void add_exit_time_per_reason(u32 exit_reason,u64 time_taken);
 /*
  * The guest has exited.  See if we can fix it or if we need userspace
  * assistance.
@@ -5862,6 +5863,10 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	u32 exit_reason = vmx->exit_reason;
 	u32 vectoring_info = vmx->idt_vectoring_info;
+
+	//Assignment 3
+    u64 timer;
+    int temp;
 
 	add_exit_per_reason(exit_reason);
 
@@ -5958,6 +5963,19 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 			       __func__, vcpu->vcpu_id);
 			vmx->loaded_vmcs->soft_vnmi_blocked = 0;
 		}
+	}
+
+	/*
+		Combining assignment 2 and 3 
+	*/
+
+	if (exit_reason < kvm_vmx_max_exit_handlers
+	    && kvm_vmx_exit_handlers[exit_reason]){
+		timer = rdtsc();
+        temp = kvm_vmx_exit_handlers[exit_reason](vcpu);
+        timer = rdtsc() - timer;
+        add_exit_time_per_reason(exit_reason,timer);
+        return temp;
 	}
 
 	if (exit_fastpath == EXIT_FASTPATH_SKIP_EMUL_INS) {

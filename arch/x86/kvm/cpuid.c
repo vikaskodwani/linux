@@ -1116,7 +1116,12 @@ void add_exit_per_reason(u32 exit_reason){
         exits_per_reason[(int)exit_reason]++;
     }
 }
+void add_exit_time_per_reason(u32 exit_reason,u64 time_taken){
+   // TBD
+}
 
 EXPORT_SYMBOL_GPL(kvm_emulate_cpuid);
 EXPORT_SYMBOL_GPL(add_exit_per_reason);
+EXPORT_SYMBOL_GPL(add_exit_time_per_reason);
+
 
