@@ -1040,7 +1040,10 @@ EXPORT_SYMBOL_GPL(kvm_cpuid);
 //void add_exit(void);
 
 //Merge exits and exits per reason for assignmenet 2 (case 1 and 3)
-u32 exits,exits_per_reason[62];
+// u32 exits,exits_per_reason[62];
+static atomic_t exits,exits_per_reason[62];
+static atomic64_t exits_time,exits_time_per_reason[62];
+
 void add_exit_per_reason(u32 exit_reason);
 
 /*
@@ -1048,11 +1051,10 @@ void add_exit_per_reason(u32 exit_reason);
 	case : total time spent processing all exits  
 	case : the total time spent for that exit
 */
-static atomic64_t exits_time,exits_time_per_reason[62];
 
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
-	u32 eax, ebx, ecx, edx;
+	u32 eax, ebx=0x40000000, ecx, edx=0x40000000;
 
 	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
 		return 1;
