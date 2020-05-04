@@ -1049,7 +1049,6 @@ void add_exit_per_reason(u32 exit_reason);
 	case : the total time spent for that exit
 */
 static atomic64_t exits_time,exits_time_per_reason[62];
-//void add_exit_time_per_reason(u32 exit_reason,u64 time_taken);
 
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
