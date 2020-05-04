@@ -5868,7 +5868,8 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
     u64 timer;
     int temp;
 
-	add_exit_per_reason(exit_reason);
+    //Merge assignment 2 and 3. 
+	//add_exit_per_reason(exit_reason);
 
 	trace_kvm_exit(exit_reason, vcpu, KVM_ISA_VMX);
 

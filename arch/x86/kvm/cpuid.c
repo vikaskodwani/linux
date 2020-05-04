@@ -1065,8 +1065,9 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	For CPUID leaf node %eax=0x4FFFFFFF:
 	Return the total number of exits (all types) in %eax 
 	*/
-	if(eax  ==  0x4fffffff){
-		eax = exits;
+	if(eax  ==  0x4FFFFFFF){
+		// eax = exits;
+		eax = atomic_read(&exits);
 	}
 	/*
 		assignment 2 - case 3
@@ -1074,20 +1075,28 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 		Return the number of exits for the exit number provided (on input) in %ecx
 		This value should be returned in %eax
 	*/ 
-	else if(eax  ==  0x4ffffffd){
-      if(ecx >= 0 && ecx < 62)	    
-            eax = exits_per_reason[(int)ecx];
+	else if(eax  ==  0x4FFFFFFD){
+      // if(ecx >= 0 && ecx < 62)	    
+      //       eax = exits_per_reason[(int)ecx];
+        if(ecx >= 0 && ecx < 62)	    
+            eax = atomic_read(&exits_per_reason[(int)ecx]);
 	} 
+	
+
+
 	/*
 		assignment 3 - case 
-		For CPUID leaf node %eax=0x4FFFFFFD:
-◦ 		Return the number of exits for the exit number provided (on input) in %ecx
- 		This value should be returned in %eax
+		For CPUID leaf node %eax=0x4FFFFFFE:
+◦ 		Return the high 32 bits of the total time spent processing all exits in %ebx
+		Return the low 32 bits of the total time spent processing all exits in %ecx
+		%ebx and %ecx return values are measured in processor cycles, across all VCPUs
 	*/ 
-	else if(eax  ==  0x4FFFFFFD){
-        // ebx =
-		// ecx 	=    
+	else if(eax  ==  0x4FFFFFFE){
+      	ebx = ( (atomic64_read(&exits_time) >> 32) );
+		ecx = ( (atomic64_read(&exits_time) & 0xFFFFFFFF ));	    
     }
+   
+
     /*
 		assignment 3 - case 
 		For CPUID leaf node %eax=0x4FFFFFFC:
@@ -1110,18 +1119,22 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 }
 
 
-void add_exit_per_reason(u32 exit_reason){
-    if(exit_reason >= 0 && exit_reason < 62){    
-        exits++;
-        exits_per_reason[(int)exit_reason]++;
-    }
-}
+// void add_exit_per_reason(u32 exit_reason){
+//     if(exit_reason >= 0 && exit_reason < 62){    
+//         exits++;
+//         exits_per_reason[(int)exit_reason]++;
+//     }
+// }
+
 void add_exit_time_per_reason(u32 exit_reason,u64 time_taken){
-   // TBD
+    if(exit_reason >= 0 && exit_reason < 62){    
+        atomic64_add(time_taken,&exits_time);
+        atomic64_add(time_taken,&exits_time_per_reason[(int)exit_reason]);
+        atomic_inc(&exits);
+        atomic_inc(&exits_per_reason[(int)exit_reason]);
+    }
 }
 
 EXPORT_SYMBOL_GPL(kvm_emulate_cpuid);
-EXPORT_SYMBOL_GPL(add_exit_per_reason);
+// EXPORT_SYMBOL_GPL(add_exit_per_reason);
 EXPORT_SYMBOL_GPL(add_exit_time_per_reason);
-
-
