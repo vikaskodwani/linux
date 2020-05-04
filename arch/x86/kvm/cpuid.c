@@ -1043,6 +1043,14 @@ EXPORT_SYMBOL_GPL(kvm_cpuid);
 u32 exits,exits_per_reason[62];
 void add_exit_per_reason(u32 exit_reason);
 
+/*
+	assignmenet 3  
+	case : total time spent processing all exits  
+	case : the total time spent for that exit
+*/
+static atomic64_t exits_time,exits_time_per_reason[62];
+//void add_exit_time_per_reason(u32 exit_reason,u64 time_taken);
+
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
 	u32 eax, ebx, ecx, edx;
@@ -1070,8 +1078,29 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	else if(eax  ==  0x4ffffffd){
       if(ecx >= 0 && ecx < 62)	    
             eax = exits_per_reason[(int)ecx];
-	} else {
-		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
+	} 
+	/*
+		assignment 3 - case 
+		For CPUID leaf node %eax=0x4FFFFFFD:
+◦ 		Return the number of exits for the exit number provided (on input) in %ecx
+ 		This value should be returned in %eax
+	*/ 
+	else if(eax  ==  0x4FFFFFFD){
+        // ebx =
+		// ecx 	=    
+    }
+    /*
+		assignment 3 - case 
+		For CPUID leaf node %eax=0x4FFFFFFC:
+		Return the time spent processing the exit number provided (on input) in %ecx
+		Return the high 32 bits of the total time spent for that exit in %ebx
+		Return the low 32 bits of the total time spent for that exit in %ecx
+	*/ 
+	else if(eax  ==  0x4FFFFFFC){
+        // ebx =
+		// ecx 	=    
+    }else {
+		
 	}
 	
 	kvm_rax_write(vcpu, eax);
