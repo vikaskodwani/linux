@@ -1036,11 +1036,6 @@ EXPORT_SYMBOL_GPL(kvm_cpuid);
 
 
 
-//u32 exits;
-//void add_exit(void);
-
-//Merge exits and exits per reason for assignmenet 2 (case 1 and 3)
-// u32 exits,exits_per_reason[62];
 static atomic_t exits,exits_per_reason[62];
 static atomic64_t exits_time,exits_time_per_reason[62];
 
@@ -1083,7 +1078,10 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 
 	else if(eax  ==  0x4ffffffe){
         ebx = ( (atomic64_read(&exits_time) >> 32) );
-		ecx = ( (atomic64_read(&exits_time) & 0xFFFFFFFF ));	    
+		ecx = ( (atomic64_read(&exits_time) & 0xFFFFFFFF ));
+		printk("assignment2&3> Total Time Spent EAX : ALL , ExitCount : %u\n",eax); 
+		printk("assignment2&3> Total Time Spent ECX : ALL , ExitCount : %u\n",ecx); 
+    
     }
 	/*
 	assignment 2
@@ -1109,6 +1107,10 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
         	if(ecx >= 0 && ecx < 62){        
 	            ebx = ( (atomic64_read(&exits_time_per_reason[(int)ecx]) >> 32) );
 			    ecx = ( (atomic64_read(&exits_time_per_reason[(int)ecx]) & 0xFFFFFFFF ));
+
+			    printk("assignment2&3> Total Time Spent for an exit (eax) : ALL , ExitCount : %u\n",eax); 
+				printk("assignment2&3> Total Time Spent for an exit (ecx) : ALL , ExitCount : %u\n",ecx); 
+
         	}	    
     }else{
 	    kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
@@ -1121,13 +1123,6 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 }
 
 
-// void add_exit_per_reason(u32 exit_reason){
-//     if(exit_reason >= 0 && exit_reason < 62){    
-//         exits++;
-//         exits_per_reason[(int)exit_reason]++;
-//     }
-// }
-
 void add_exit_time_per_reason(u32 exit_reason,u64 time_taken){
     if(exit_reason >= 0 && exit_reason < 62){    
         atomic64_add(time_taken,&exits_time);
@@ -1138,5 +1133,4 @@ void add_exit_time_per_reason(u32 exit_reason,u64 time_taken){
 }
 
 EXPORT_SYMBOL_GPL(kvm_emulate_cpuid);
-// EXPORT_SYMBOL_GPL(add_exit_per_reason);
 EXPORT_SYMBOL_GPL(add_exit_time_per_reason);
