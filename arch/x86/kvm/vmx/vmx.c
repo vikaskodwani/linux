@@ -5851,7 +5851,7 @@ void dump_vmcs(void)
 
 u32 exits =0;
 EXPORT_SYMBOL(exits);
-void add_exit_per_reason(u32 exit_reason);
+// void add_exit_per_reason(u32 exit_reason);
 void add_exit_time_per_reason(u32 exit_reason,u64 time_taken);
 /*
  * The guest has exited.  See if we can fix it or if we need userspace
