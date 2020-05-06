@@ -1066,7 +1066,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	if(eax  ==  0x4fffffff){
 	    eax = atomic_read(&exits);
 	    //Add Debug Statement
-		printk("assignment2&3> Exit_Reason : ALL , ExitCount : %u\n",eax); 
+		printk("assignment2&3> ALL - ExitCount : %u\n",eax); 
 	}
 	/*
 		assignment 3 - case 
@@ -1079,21 +1079,20 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	else if(eax  ==  0x4ffffffe){
         ebx = ( (atomic64_read(&exits_time) >> 32) );
 		ecx = ( (atomic64_read(&exits_time) & 0xFFFFFFFF ));
-		printk("assignment2&3> Total Time Spent EAX : ALL , ExitCount : %u\n",eax); 
-		printk("assignment2&3> Total Time Spent ECX : ALL , ExitCount : %u\n",ecx); 
-    
+		printk("assignment2&3> Total Time Spent for all exits : %u\n",ecx); 
     }
 	/*
 	assignment 2
 	For CPUID leaf node %eax=0x4FFFFFFF:
 	Return the total number of exits (all types) in %eax 
 	*/
+
     else if(eax  ==  0x4ffffffd){
         if(ecx >= 0 && ecx < 62)	    
             eax = atomic_read(&exits_per_reason[(int)ecx]);
-        	
-        	//Add Debug Statement
-	    	printk("assignment2&3> EXIT_REASON : %d , ExitCount : %u\n",(int)ecx,eax);
+		
+		//Add Debug Statement
+		printk("assignment2&3> Exit_Reason : %d , ExitCount : %u\n",(int)ecx,eax);
 	}
 
 	/*
@@ -1107,9 +1106,8 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
         	if(ecx >= 0 && ecx < 62){        
 	            ebx = ( (atomic64_read(&exits_time_per_reason[(int)ecx]) >> 32) );
 			    ecx = ( (atomic64_read(&exits_time_per_reason[(int)ecx]) & 0xFFFFFFFF ));
-
-			    printk("assignment2&3> Total Time Spent for an exit (eax) : ALL , ExitCount : %u\n",eax); 
-				printk("assignment2&3> Total Time Spent for an exit (ecx) : ALL , ExitCount : %u\n",ecx); 
+				//Add Debug Statement
+				printk("assignment2&3> Time Spent : %d , Total time Spent : %u\n",(int)ecx,eax);
 
         	}	    
     }else{
